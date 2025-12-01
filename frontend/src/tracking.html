@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Bus Routes - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="assets/karnataka-emblem.png" alt="Karnataka Government" class="header-emblem">
+                <img src="assets/bmtc-logo.png" alt="BMTC" class="header-logo">
+                <div class="header-title">
+                    <h1>RouteSaathi</h1>
+                    <p>BMTC Route Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name">Coordinator</span>
+                    <span class="user-role">Control Center</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordinator.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="tracking.html" class="nav-item active">
+                    <span class="nav-icon">🚍</span>
+                    <span class="nav-text">Track Bus Routes</span>
+                </a>
+                <a href="ai-recommendations.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI Recommendations</span>
+                </a>
+                <a href="communication.html" class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Communication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Live Bus Tracking</h2>
+                <p>Real-time monitoring of all active buses</p>
+            </div>
+
+            <div class="tracking-filters">
+                <div class="filter-group">
+                    <label>Filter by Route:</label>
+                    <select id="routeFilter" onchange="filterBuses()">
+                        <option value="all">All Routes</option>
+                        <option value="335E">335E</option>
+                        <option value="500K">500K</option>
+                        <option value="G4">G4</option>
+                        <option value="201">201</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Filter by Status:</label>
+                    <select id="statusFilter" onchange="filterBuses()">
+                        <option value="all">All Status</option>
+                        <option value="ontime">On-Time</option>
+                        <option value="delay">Delayed</option>
+                        <option value="congestion">Congestion</option>
+                        <option value="heavy">Heavy Load</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="refreshTracking()">🔄 Refresh</button>
+            </div>
+
+            <div class="tracking-layout">
+                <div class="map-section">
+                    <div class="map-container">
+                        <img src="assets/bangalore-map.png" alt="Bangalore Route Map" class="tracking-map">
+                        <div class="map-overlay">
+                            <p>📍 Live GPS Tracking Enabled</p>
+                            <p class="map-note">Map integration with real-time bus locations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bus-list-section">
+                    <h3>Active Buses (24)</h3>
+                    <div class="bus-cards" id="busList">
+                        <!-- Bus cards will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Bus Fleet Details</h3>
+                    <button class="btn-secondary btn-sm" onclick="exportData()">📥 Export Data</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bus Number</th>
+                                <th>Conductor</th>
+                                <th>Route</th>
+                                <th>Current Location</th>
+                                <th>Status</th>
+                                <th>Load</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="busTableBody">
+                            <!-- Table rows will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/tracking.js"></script>
+</body>
+</html>

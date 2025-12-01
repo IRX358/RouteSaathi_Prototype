@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinator Dashboard - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="assets/karnataka-emblem.png" alt="Karnataka Government" class="header-emblem">
+                <img src="assets/bmtc-logo.png" alt="BMTC" class="header-logo">
+                <div class="header-title">
+                    <h1>RouteSaathi</h1>
+                    <p>BMTC Route Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name">Coordinator</span>
+                    <span class="user-role">Control Center</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordinator.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="tracking.html" class="nav-item">
+                    <span class="nav-icon">🚍</span>
+                    <span class="nav-text">Track Bus Routes</span>
+                </a>
+                <a href="ai-recommendations.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI Recommendations</span>
+                </a>
+                <a href="communication.html" class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Communication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Coordinator Control Center</h2>
+                <p>Real-time bus fleet management and route optimization</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card stat-primary">
+                    <div class="stat-icon">🚌</div>
+                    <div class="stat-content">
+                        <h3 id="totalBuses">0</h3>
+                        <p>Total Active Buses</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-success">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-content">
+                        <h3 id="lowDemandRoutes">0</h3>
+                        <p>Routes With Low Demand</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-danger">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-content">
+                        <h3 id="highDemandRoutes">0</h3>
+                        <p>Routes With High Demand</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-warning">
+                    <div class="stat-icon">✉️</div>
+                    <div class="stat-content">
+                        <h3 id="pendingMessages">0</h3>
+                        <p>Pending Conductor Messages</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-info">
+                    <div class="stat-icon">💡</div>
+                    <div class="stat-content">
+                        <h3 id="mlSuggestions">0</h3>
+                        <p>ML Suggested Reallocations</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-neutral">
+                    <div class="stat-icon">🚦</div>
+                    <div class="stat-content">
+                        <h3 id="congestionAlerts">0</h3>
+                        <p>Congestion Alerts</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-sections">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Recent Alerts & Notifications</h3>
+                        <button class="btn-secondary btn-sm">View All</button>
+                    </div>
+                    <div class="alerts-list" id="alertsList">
+                        <!-- Alerts will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Route Performance Summary</h3>
+                        <button class="btn-secondary btn-sm">Generate Report</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Route ID</th>
+                                    <th>Route Name</th>
+                                    <th>Active Buses</th>
+                                    <th>Load Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routeTableBody">
+                                <!-- Routes will be populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="action-btn" onclick="window.location.href='ai-recommendations.html'">
+                            <span class="action-icon">🤖</span>
+                            <span>View AI Recommendations</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='tracking.html'">
+                            <span class="action-icon">📍</span>
+                            <span>Track All Buses</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='communication.html'">
+                            <span class="action-icon">📢</span>
+                            <span>Send Broadcast</span>
+                        </button>
+                        <button class="action-btn" onclick="alert('Report generation feature coming soon')">
+                            <span class="action-icon">📄</span>
+                            <span>Generate Daily Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/coordinator.js"></script>
+</body>
+</html>

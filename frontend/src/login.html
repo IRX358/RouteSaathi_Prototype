@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+    <div class="login-header">
+        <div class="header-left">
+            <img src="bmtclogo1.png" alt="Karnataka Government" class="emblem">
+            <div class="header-text">
+                <h3>Government of Karnataka</h3>
+                <p>Transport Department</p>
+            </div>
+        </div>
+        <div class="header-center">
+            <img src="assets/bmtc-logo.png" alt="BMTC Logo" class="bmtc-logo">
+            <div class="title-section">
+                <h1>Bengaluru Metropolitan Transport Corporation</h1>
+                <h2>RouteSaathi - Smart Route Management System</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header-card">
+                <h2>System Login</h2>
+                <p>Authorized Personnel Only</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="role">Select Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">-- Select Your Role --</option>
+                        <option value="coordinator">BMTC Coordinator</option>
+                        <option value="conductor">BMTC Conductor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <button type="submit" class="btn-primary">Login</button>
+
+                <div class="login-info">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <p>Coordinator: username = <em>coordinator</em>, password = <em>coord123</em></p>
+                    <p>Conductor: username = <em>conductor</em>, password = <em>cond123</em></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="login-footer">
+        <p>&copy; 2025 Bengaluru Metropolitan Transport Corporation | Government of Karnataka</p>
+        <p>For official use only</p>
+    </footer>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

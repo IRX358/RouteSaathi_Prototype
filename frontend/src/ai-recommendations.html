@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recommendations - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="assets/karnataka-emblem.png" alt="Karnataka Government" class="header-emblem">
+                <img src="assets/bmtc-logo.png" alt="BMTC" class="header-logo">
+                <div class="header-title">
+                    <h1>RouteSaathi</h1>
+                    <p>BMTC Route Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name">Coordinator</span>
+                    <span class="user-role">Control Center</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordinator.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="tracking.html" class="nav-item">
+                    <span class="nav-icon">🚍</span>
+                    <span class="nav-text">Track Bus Routes</span>
+                </a>
+                <a href="ai-recommendations.html" class="nav-item active">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI Recommendations</span>
+                </a>
+                <a href="communication.html" class="nav-item">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Communication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>AI-Powered Route Recommendations</h2>
+                <p>Machine learning suggestions based on historical data and real-time analysis</p>
+            </div>
+
+            <div class="ml-summary-cards">
+                <div class="ml-card">
+                    <div class="ml-icon">📊</div>
+                    <div class="ml-content">
+                        <h3>Data Source</h3>
+                        <p>Yesterday's ticketing & GPS data</p>
+                        <span class="ml-meta">Last updated: 2 hours ago</span>
+                    </div>
+                </div>
+                <div class="ml-card">
+                    <div class="ml-icon">🧠</div>
+                    <div class="ml-content">
+                        <h3>Model Confidence</h3>
+                        <p>87.5% accuracy</p>
+                        <span class="ml-meta">Based on 30-day validation</span>
+                    </div>
+                </div>
+                <div class="ml-card">
+                    <div class="ml-icon">🎯</div>
+                    <div class="ml-content">
+                        <h3>Optimization Goal</h3>
+                        <p>Minimize wait time & overcrowding</p>
+                        <span class="ml-meta">Multi-objective optimization</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>🤖 ML-Based Bus Reallocation Suggestions</h3>
+                    <div class="header-actions">
+                        <button class="btn-secondary btn-sm" onclick="refreshRecommendations()">🔄 Refresh</button>
+                        <button class="btn-primary btn-sm" onclick="applyAllRecommendations()">✅ Apply All</button>
+                    </div>
+                </div>
+
+                <div class="recommendations-info">
+                    <p><strong>Analysis Summary:</strong> Based on passenger footfall patterns, congestion data, and historical ticketing records from the past 7 days, the system recommends the following bus reallocations to optimize fleet efficiency.</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table recommendations-table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Route (From → To)</th>
+                                <th>Current Buses</th>
+                                <th>Recommended Buses</th>
+                                <th>Change</th>
+                                <th>Reason</th>
+                                <th>Impact</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recommendationsTableBody">
+                            <!-- Recommendations will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>📈 Predictive Analytics</h3>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>Peak Hour Predictions</h4>
+                        <div class="analytics-content">
+                            <div class="prediction-item">
+                                <span class="time">08:00 - 10:00 AM</span>
+                                <span class="demand demand-high">High Demand</span>
+                                <span class="routes">Routes: 335E, 500K, G4</span>
+                            </div>
+                            <div class="prediction-item">
+                                <span class="time">05:30 - 08:00 PM</span>
+                                <span class="demand demand-high">High Demand</span>
+                                <span class="routes">Routes: 201, 356, 500D</span>
+                            </div>
+                            <div class="prediction-item">
+                                <span class="time">11:00 AM - 03:00 PM</span>
+                                <span class="demand demand-low">Low Demand</span>
+                                <span class="routes">All routes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h4>Route Efficiency Score</h4>
+                        <div class="analytics-content">
+                            <div class="efficiency-item">
+                                <span class="route-name">Route 335E</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 92%"></div>
+                                </div>
+                                <span class="score">92%</span>
+                            </div>
+                            <div class="efficiency-item">
+                                <span class="route-name">Route 500K</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 88%"></div>
+                                </div>
+                                <span class="score">88%</span>
+                            </div>
+                            <div class="efficiency-item">
+                                <span class="route-name">Route G4</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <span class="score">75%</span>
+                            </div>
+                            <div class="efficiency-item">
+                                <span class="route-name">Route 201</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" style="width: 65%"></div>
+                                </div>
+                                <span class="score">65%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h4>Congestion Forecast</h4>
+                        <div class="analytics-content">
+                            <div class="forecast-item">
+                                <span class="location">Silk Board Junction</span>
+                                <span class="congestion congestion-high">⚠️ High</span>
+                            </div>
+                            <div class="forecast-item">
+                                <span class="location">Majestic Bus Station</span>
+                                <span class="congestion congestion-high">⚠️ High</span>
+                            </div>
+                            <div class="forecast-item">
+                                <span class="location">Electronic City</span>
+                                <span class="congestion congestion-medium">⚡ Medium</span>
+                            </div>
+                            <div class="forecast-item">
+                                <span class="location">Whitefield</span>
+                                <span class="congestion congestion-medium">⚡ Medium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>💡 Additional Insights</h3>
+                </div>
+                <div class="insights-list">
+                    <div class="insight-item">
+                        <span class="insight-icon">📌</span>
+                        <div class="insight-content">
+                            <h4>Route 335E Overcrowding</h4>
+                            <p>Average occupancy during morning hours: 115%. Consider adding 2 more buses during 7:00-9:00 AM.</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">💰</span>
+                        <div class="insight-content">
+                            <h4>Cost Optimization Opportunity</h4>
+                            <p>Route 201 running at 45% capacity during afternoon. Reduce frequency by 15 minutes to save fuel costs.</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">⏱️</span>
+                        <div class="insight-content">
+                            <h4>Schedule Adjustment Needed</h4>
+                            <p>Consistent 12-minute delays on Route G4 due to traffic. Adjust schedule or optimize route path.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/ml.js"></script>
+</body>
+</html>

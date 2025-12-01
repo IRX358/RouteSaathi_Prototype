@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="assets/karnataka-emblem.png" alt="Karnataka Government" class="header-emblem">
+                <img src="assets/bmtc-logo.png" alt="BMTC" class="header-logo">
+                <div class="header-title">
+                    <h1>RouteSaathi</h1>
+                    <p>BMTC Route Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name">Coordinator</span>
+                    <span class="user-role">Control Center</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordinator.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="tracking.html" class="nav-item">
+                    <span class="nav-icon">🚍</span>
+                    <span class="nav-text">Track Bus Routes</span>
+                </a>
+                <a href="ai-recommendations.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI Recommendations</span>
+                </a>
+                <a href="communication.html" class="nav-item active">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Communication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Coordinator-Conductor Communication</h2>
+                <p>Real-time messaging with bus conductors</p>
+            </div>
+
+            <div class="communication-layout">
+                <div class="conductors-panel">
+                    <div class="panel-header">
+                        <h3>Active Conductors</h3>
+                        <input type="text" id="searchConductor" placeholder="🔍 Search bus or conductor..." onkeyup="searchConductors()">
+                    </div>
+                    
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="filterConductors('all')">All (24)</button>
+                        <button class="filter-tab" onclick="filterConductors('online')">Online (18)</button>
+                        <button class="filter-tab" onclick="filterConductors('unread')">Unread (5)</button>
+                    </div>
+
+                    <div class="conductors-list" id="conductorsList">
+                        <!-- Conductor items will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="chat-panel">
+                    <div class="chat-header" id="chatHeader">
+                        <div class="chat-info">
+                            <h3>Select a conductor to start messaging</h3>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="no-chat-selected">
+                            <div class="no-chat-icon">💬</div>
+                            <p>Select a conductor from the list to view conversation</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area" id="chatInputArea" style="display: none;">
+                        <textarea id="messageInput" placeholder="Type your message..." rows="2" onkeypress="handleKeyPress(event)"></textarea>
+                        <button class="btn-send" onclick="sendMessageFromCoordinator()">
+                            <span>Send</span>
+                            <span class="send-icon">➤</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-panel" id="infoPanel">
+                    <div class="panel-header">
+                        <h3>Conductor Information</h3>
+                    </div>
+                    <div class="conductor-info" id="conductorInfo">
+                        <p class="no-selection">Select a conductor to view details</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>📢 Broadcast Message</h3>
+                </div>
+                <div class="broadcast-section">
+                    <div class="broadcast-options">
+                        <label>
+                            <input type="radio" name="broadcast" value="all" checked>
+                            <span>All Conductors</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="broadcast" value="route">
+                            <span>Specific Route</span>
+                        </label>
+                        <select id="routeSelect" style="display: none;">
+                            <option>Select Route</option>
+                            <option value="335E">Route 335E</option>
+                            <option value="500K">Route 500K</option>
+                            <option value="G4">Route G4</option>
+                            <option value="201">Route 201</option>
+                        </select>
+                    </div>
+                    <textarea id="broadcastMessage" placeholder="Type broadcast message..." rows="3"></textarea>
+                    <button class="btn-primary" onclick="sendBroadcast()">📣 Send Broadcast</button>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>📋 Recent Messages</h3>
+                    <button class="btn-secondary btn-sm" onclick="clearAllMessages()">Clear All</button>
+                </div>
+                <div class="recent-messages" id="recentMessages">
+                    <!-- Recent messages will be populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/communication.js"></script>
+</body>
+</html>

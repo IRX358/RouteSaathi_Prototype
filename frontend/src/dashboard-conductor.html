@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conductor Panel - RouteSaathi | BMTC</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="assets/karnataka-emblem.png" alt="Karnataka Government" class="header-emblem">
+                <img src="assets/bmtc-logo.png" alt="BMTC" class="header-logo">
+                <div class="header-title">
+                    <h1>RouteSaathi</h1>
+                    <p>Conductor Panel</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-name" id="conductorName">Conductor</span>
+                    <span class="user-role">Bus Operator</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="conductor-layout">
+        <main class="conductor-content">
+            <div class="page-header">
+                <h2>Today's Assignment</h2>
+                <p id="currentDate"></p>
+            </div>
+
+            <div class="conductor-grid">
+                <div class="assignment-card">
+                    <div class="card-header">
+                        <h3>🚌 Bus Assignment</h3>
+                        <span class="badge badge-success">Active</span>
+                    </div>
+                    <div class="assignment-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Bus Number:</span>
+                            <span class="detail-value" id="busNumber">KA-01-F-4532</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Route ID:</span>
+                            <span class="detail-value" id="routeId">335E</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Route Name:</span>
+                            <span class="detail-value" id="routeName">Kempegowda Bus Station → Electronic City</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Start Time:</span>
+                            <span class="detail-value" id="startTime">06:30 AM</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">End Time:</span>
+                            <span class="detail-value" id="endTime">10:30 PM</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Current Status:</span>
+                            <span class="detail-value status-active" id="currentStatus">On Route</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notifications-card">
+                    <div class="card-header">
+                        <h3>📢 Notifications from Coordinator</h3>
+                        <span class="badge badge-warning" id="notifCount">3 New</span>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <!-- Notifications will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="tracking-card">
+                    <div class="card-header">
+                        <h3>📍 Live Tracking Information</h3>
+                    </div>
+                    <div class="tracking-info">
+                        <div class="tracking-item">
+                            <span class="tracking-label">Current Location:</span>
+                            <span class="tracking-value" id="currentLocation">Silk Board Junction</span>
+                        </div>
+                        <div class="tracking-item">
+                            <span class="tracking-label">Next Stop:</span>
+                            <span class="tracking-value" id="nextStop">BTM Layout</span>
+                        </div>
+                        <div class="tracking-item">
+                            <span class="tracking-label">Distance to Destination:</span>
+                            <span class="tracking-value" id="distanceRemaining">12.5 km</span>
+                        </div>
+                        <div class="tracking-item">
+                            <span class="tracking-label">GPS Status:</span>
+                            <span class="tracking-value status-success">🟢 Connected</span>
+                        </div>
+                    </div>
+                    <div class="map-placeholder">
+                        <img src="assets/map-placeholder.png" alt="Route Map" class="map-image">
+                        <p class="map-text">Live location tracking enabled</p>
+                    </div>
+                </div>
+
+                <div class="actions-card">
+                    <div class="card-header">
+                        <h3>⚡ Quick Actions</h3>
+                    </div>
+                    <div class="conductor-actions">
+                        <button class="action-btn action-primary" onclick="openMessageModal()">
+                            <span class="action-icon">💬</span>
+                            <span>Send Message to Coordinator</span>
+                        </button>
+                        <button class="action-btn action-danger" onclick="openIssueModal()">
+                            <span class="action-icon">⚠️</span>
+                            <span>Report Issue</span>
+                        </button>
+                        <button class="action-btn action-info" onclick="viewMessages()">
+                            <span class="action-icon">📨</span>
+                            <span>View All Messages</span>
+                        </button>
+                        <button class="action-btn action-success" onclick="updateStatus()">
+                            <span class="action-icon">✅</span>
+                            <span>Update Status</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="issue-types-card">
+                    <div class="card-header">
+                        <h3>🚨 Common Issues</h3>
+                    </div>
+                    <div class="issue-types">
+                        <button class="issue-btn" onclick="reportQuickIssue('breakdown')">🔧 Vehicle Breakdown</button>
+                        <button class="issue-btn" onclick="reportQuickIssue('traffic')">🚦 Heavy Traffic</button>
+                        <button class="issue-btn" onclick="reportQuickIssue('accident')">🚑 Accident</button>
+                        <button class="issue-btn" onclick="reportQuickIssue('crowding')">👥 Heavy Crowding</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Send Message to Coordinator</h3>
+                <button class="modal-close" onclick="closeMessageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="messageText" placeholder="Type your message here..." rows="5"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeMessageModal()">Cancel</button>
+                <button class="btn-primary" onclick="sendMessage()">Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Issue Modal -->
+    <div id="issueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Report Issue</h3>
+                <button class="modal-close" onclick="closeIssueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Issue Type</label>
+                    <select id="issueType">
+                        <option value="breakdown">Vehicle Breakdown</option>
+                        <option value="traffic">Heavy Traffic</option>
+                        <option value="accident">Accident</option>
+                        <option value="crowding">Heavy Crowding</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="issueDescription" placeholder="Describe the issue in detail..." rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeIssueModal()">Cancel</button>
+                <button class="btn-danger" onclick="submitIssue()">Report Issue</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/conductor.js"></script>
+</body>
+</html>
