@@ -1,3 +1,4 @@
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 // Check authentication
 if (localStorage.getItem('userRole') !== 'conductor') {
     window.location.href = 'login.html';
@@ -70,7 +71,7 @@ function closeMessageModal() {
     document.getElementById('messageText').value = '';
 }
 
-function sendMessage() {
+async function sendMessage() {
     const messageText = document.getElementById('messageText').value;
     
     if (!messageText.trim()) {
@@ -78,25 +79,31 @@ function sendMessage() {
         return;
     }
     
-    // Get existing messages
-    let messages = JSON.parse(localStorage.getItem('messages') || '[]');
-    
-    // Add new message
-    const newMessage = {
-        id: messages.length + 1,
+    const messagePayload = {
         from: 'conductor',
         to: 'coordinator',
-        busNumber: 'KA-01-F-4532',
+        // Assuming current bus details are locally available
+        busNumber: document.getElementById('busNumber').textContent || 'KA-01-F-4532',
         message: messageText,
-        timestamp: new Date().toISOString(),
-        read: false
+        timestamp: new Date().toISOString()
     };
     
-    messages.push(newMessage);
-    localStorage.setItem('messages', JSON.stringify(messages));
-    
-    alert('Message sent to coordinator successfully!');
-    closeMessageModal();
+    try {
+        const response = await fetch(`${API_BASE_URL}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(messagePayload)
+        });
+
+        if (!response.ok) throw new Error('API failed to send message');
+        
+        alert('Message sent to coordinator successfully!');
+        closeMessageModal();
+        
+    } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Failed to send message to coordinator due to an API error.');
+    }
 }
 
 function openIssueModal() {
@@ -108,7 +115,8 @@ function closeIssueModal() {
     document.getElementById('issueDescription').value = '';
 }
 
-function submitIssue() {
+// New: Submit detailed issue (API POST)
+async function submitIssue() {
     const issueType = document.getElementById('issueType').value;
     const issueDescription = document.getElementById('issueDescription').value;
     
@@ -117,27 +125,35 @@ function submitIssue() {
         return;
     }
     
-    // Get existing messages
-    let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+    const message = `[ISSUE: ${issueType.toUpperCase()}] ${issueDescription}`;
     
-    // Add issue as message
-    const newMessage = {
-        id: messages.length + 1,
+    const messagePayload = {
         from: 'conductor',
         to: 'coordinator',
-        busNumber: 'KA-01-F-4532',
-        message: `[ISSUE: ${issueType.toUpperCase()}] ${issueDescription}`,
-        timestamp: new Date().toISOString(),
-        read: false
+        busNumber: document.getElementById('busNumber').textContent || 'KA-01-F-4532',
+        message: message,
+        timestamp: new Date().toISOString()
     };
     
-    messages.push(newMessage);
-    localStorage.setItem('messages', JSON.stringify(messages));
-    
-    alert('Issue reported successfully! Coordinator will be notified.');
-    closeIssueModal();
+    try {
+        const response = await fetch(`${API_BASE_URL}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(messagePayload)
+        });
+
+        if (!response.ok) throw new Error('API failed to report issue');
+
+        alert('Issue reported successfully! Coordinator will be notified.');
+        closeIssueModal();
+        
+    } catch (error) {
+        console.error('Error reporting issue:', error);
+        alert('Failed to report issue due to an API error.');
+    }
 }
 
+// New: Report quick issue (API POST)
 function reportQuickIssue(issueType) {
     const issueMessages = {
         'breakdown': 'Vehicle breakdown reported. Immediate assistance required.',
@@ -147,22 +163,34 @@ function reportQuickIssue(issueType) {
     };
     
     if (confirm(`Report ${issueType} issue?\n\n"${issueMessages[issueType]}"`)) {
-        let messages = JSON.parse(localStorage.getItem('messages') || '[]');
         
-        const newMessage = {
-            id: messages.length + 1,
+        const message = `[URGENT: ${issueType.toUpperCase()}] ${issueMessages[issueType]}`;
+        
+        const messagePayload = {
             from: 'conductor',
             to: 'coordinator',
-            busNumber: 'KA-01-F-4532',
-            message: `[URGENT: ${issueType.toUpperCase()}] ${issueMessages[issueType]}`,
-            timestamp: new Date().toISOString(),
-            read: false
+            busNumber: document.getElementById('busNumber').textContent || 'KA-01-F-4532',
+            message: message,
+            timestamp: new Date().toISOString()
         };
         
-        messages.push(newMessage);
-        localStorage.setItem('messages', JSON.stringify(messages));
-        
-        alert('Issue reported successfully!');
+        // IIFE for the async fetch call
+        (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(messagePayload)
+                });
+
+                if (!response.ok) throw new Error('API failed to report quick issue');
+
+                alert('Issue reported successfully!');
+            } catch (error) {
+                console.error('Error reporting quick issue:', error);
+                alert('Failed to report quick issue due to an API error.');
+            }
+        })();
     }
 }
 

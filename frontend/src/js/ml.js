@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
 // Check authentication
 if (localStorage.getItem('userRole') !== 'coordinator') {
     window.location.href = 'login.html';
@@ -11,75 +13,22 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// Mock ML recommendations
-const recommendations = [
-    {
-        priority: 'HIGH',
-        priorityClass: 'badge-danger',
-        route: 'Kempegowda BS → Electronic City (335E)',
-        currentBuses: 6,
-        recommendedBuses: 8,
-        change: '+2',
-        changeClass: 'badge-success',
-        reason: 'High passenger footfall, 115% avg occupancy',
-        impact: 'Reduce wait time by 8 mins'
-    },
-    {
-        priority: 'HIGH',
-        priorityClass: 'badge-danger',
-        route: 'Shivajinagar → Whitefield (G4)',
-        currentBuses: 5,
-        recommendedBuses: 7,
-        change: '+2',
-        changeClass: 'badge-success',
-        reason: 'Tech corridor peak hours, consistent delays',
-        impact: 'Improve on-time performance to 92%'
-    },
-    {
-        priority: 'MEDIUM',
-        priorityClass: 'badge-warning',
-        route: 'Shanthinagar → Marathahalli (201)',
-        currentBuses: 3,
-        recommendedBuses: 2,
-        change: '-1',
-        changeClass: 'badge-danger',
-        reason: 'Low congestion, 45% avg occupancy',
-        impact: 'Save fuel costs, optimize resources'
-    },
-    {
-        priority: 'MEDIUM',
-        priorityClass: 'badge-warning',
-        route: 'Majestic → Hebbal (500D)',
-        currentBuses: 2,
-        recommendedBuses: 3,
-        change: '+1',
-        changeClass: 'badge-success',
-        reason: 'Moderate demand during evening hours',
-        impact: 'Better service coverage'
-    },
-    {
-        priority: 'LOW',
-        priorityClass: 'badge-info',
-        route: 'Banashankari → Koramangala (356)',
-        currentBuses: 4,
-        recommendedBuses: 4,
-        change: '0',
-        changeClass: 'badge-info',
-        reason: 'Optimal allocation, balanced load',
-        impact: 'Maintain current efficiency'
-    },
-    {
-        priority: 'LOW',
-        priorityClass: 'badge-info',
-        route: 'Kempegowda BS → Yeshwanthpur (500K)',
-        currentBuses: 4,
-        recommendedBuses: 5,
-        change: '+1',
-        changeClass: 'badge-success',
-        reason: 'Metro connectivity area, growing demand',
-        impact: 'Future-proof allocation'
+let recommendations = [];
+
+// Fetch recommendations from API
+async function fetchRecommendations() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai/recommendations`);
+        if (!response.ok) throw new Error('Failed to fetch recommendations');
+        
+        recommendations = await response.json();
+        
+    } catch (error) {
+        console.error('Error fetching recommendations data:', error);
+        alert('Could not load ML recommendations.');
+        recommendations = [];
     }
-];
+}
 
 // Populate recommendations table
 function populateRecommendations() {
@@ -102,28 +51,55 @@ function populateRecommendations() {
     });
 }
 
-function applyRecommendation(index) {
+async function applyRecommendation(index) { 
     const rec = recommendations[index];
-    if (confirm(`Apply recommendation for ${rec.route}?\n\nChange: ${rec.change} buses\nImpact: ${rec.impact}`)) {
-        alert(`Reallocation applied successfully!\n\n${rec.route}\nBuses updated: ${rec.currentBuses} → ${rec.recommendedBuses}`);
+    if (confirm(`Apply recommendation for ${rec.route}?...\nChange: ${rec.change}`)) {
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/ai/apply/${rec.route}`, { // POST request to apply
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) throw new Error('Failed to apply recommendation');
+            
+            const result = await response.json();
+            alert(`Reallocation applied successfully! \n\n${result.message}`);
+            await refreshRecommendations(); // Refresh the list after applying
+            
+        } catch (error) {
+            console.error('Error applying recommendation:', error);
+            alert('Failed to apply reallocation due to an API error.');
+        }
     }
 }
 
-function applyAllRecommendations() {
-    const highPriority = recommendations.filter(r => r.priority === 'HIGH').length;
+// function applyAllRecommendations() {
+//     const highPriority = recommendations.filter(r => r.priority === 'HIGH').length;
+//     const totalChanges = recommendations.filter(r => r.change !== '0').length;
+    
+//     if (confirm(`Apply all ML recommendations?\n\nTotal changes: ${totalChanges}\nHigh priority: ${highPriority}\n\nThis will optimize the entire fleet allocation.`)) {
+//         alert(`All recommendations applied successfully!\n\n${totalChanges} routes updated.\nFleet optimization complete.`);
+//     }
+// }
+
+async function applyAllRecommendations() { 
     const totalChanges = recommendations.filter(r => r.change !== '0').length;
     
-    if (confirm(`Apply all ML recommendations?\n\nTotal changes: ${totalChanges}\nHigh priority: ${highPriority}\n\nThis will optimize the entire fleet allocation.`)) {
-        alert(`All recommendations applied successfully!\n\n${totalChanges} routes updated.\nFleet optimization complete.`);
+    if (confirm(`Apply all ML recommendations?\n\nTotal changes: ${totalChanges}`)) {
+        // NOTE: In a real app, this would hit a single /api/ai/apply_all endpoint
+        alert(`All recommendations queued successfully!`);
     }
 }
 
-function refreshRecommendations() {
+async function refreshRecommendations() { 
     alert('Refreshing ML recommendations...\n\nIn production, this would trigger a new ML prediction based on latest data.');
+    await fetchRecommendations();
     populateRecommendations();
 }
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await fetchRecommendations(); // Initial load
     populateRecommendations();
 });

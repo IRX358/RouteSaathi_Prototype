@@ -1,0 +1,12 @@
+{
+    "conductors": [
+        { "id": 1, "name": "Ramesh Kumar", "busNumber": "KA-01-F-4532", "route": "335E", "online": true, "unread": 2 },
+        { "id": 2, "name": "Suresh Babu", "busNumber": "KA-01-F-8934", "route": "G4", "online": true, "unread": 1 },
+        { "id": 3, "name": "Prakash M", "busNumber": "KA-01-F-3421", "route": "500K", "online": true, "unread": 0 }
+    ],
+    "buses": [
+        { "number": "KA-01-F-4532", "conductor_id": 1, "conductor": "Ramesh Kumar", "route": "335E", "location": "Silk Board Junction", "status": "delay", "statusText": "Delayed", "load": "85%", "loadClass": "badge-warning" },
+        { "number": "KA-01-F-8934", "conductor_id": 2, "conductor": "Suresh Babu", "route": "G4", "location": "Whitefield Main Road", "status": "congestion", "statusText": "Congestion", "load": "92%", "loadClass": "badge-danger" },
+        { "number": "KA-01-F-3421", "conductor_id": 3, "conductor": "Prakash M", "route": "500K", "location": "Yeshwanthpur", "status": "ontime", "statusText": "On-Time", "load": "68%", "loadClass": "badge-success" }
+    ]
+}

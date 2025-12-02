@@ -1,0 +1,4 @@
+[
+    { "priority": "HIGH", "route": "335E", "currentBuses": 6, "recommendedBuses": 8, "change": "+2", "reason": "High passenger footfall, 115% avg occupancy", "impact": "Reduce wait time by 8 mins" },
+    { "priority": "MEDIUM", "route": "201", "currentBuses": 3, "recommendedBuses": 2, "change": "-1", "reason": "Low congestion, 45% avg occupancy", "impact": "Save fuel costs, optimize resources" }
+]

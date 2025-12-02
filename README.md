@@ -91,34 +91,37 @@ flowchart TD
 ## 📁 Folder Structure
 
 ```plaintext
-project/
-   frontend/
-      pages/
-         index.html
-         login.html
-         dashboard-coordinator.html
-         dashboard-conductor.html
-         tracking.html
-         ai-recommendations.html
-         communication.html
-      assets/
-         karnataka-emblem.png
-         bmtc-logo.png
-         bangalore-map.png
-         map-placeholder.png
-      css/
-         style.css
-      js/
-         login.js
-         coordinator.js
-         conductor.js
-         tracking.js
-         ml.js
-         communication.js
-      README.md
-   backend/
-      (future server, API, database code here)
-   LICENSE
+routesaathi/
+├── backend/
+│   ├── data/
+│   │   ├── fleet.json          # Mock bus/conductor data for Tracking/Communication
+│   │   ├── ml.json             # Mock data for AI Recommendations
+│   │   ├── stats.json          # Mock dashboard statistics and alerts
+│   │   └── user.json           # Mock login credentials
+│   ├── main.py                 # Core FastAPI application, API endpoints, and data loader
+│   └── requirements.txt # List of required Python dependencies (FastAPI, Uvicorn, Pydantic)
+├── frontend/
+│   └── src/
+│       ├── assets/
+│       │   ├── bmtclogo1.png       # Logos and emblems
+│       │   └── ... (other assets like map-placeholder.png, karnataka-emblem.png)
+│       ├── css/
+│       │   └── style.css           # Complete style sheet (BMTC Design System)
+│       ├── js/
+│       │   ├── communication.js    # Coordinator chat and broadcast logic (API integrated)
+│       │   ├── conductor.js        # Conductor dashboard, issue reporting (API integrated)
+│       │   ├── coordinator.js      # Coordinator dashboard logic (API integrated)
+│       │   ├── login.js            # Authentication logic (API integrated)
+│       │   ├── ml.js               # AI recommendations logic (API integrated)
+│       │   └── tracking.js         # Bus tracking/filtering logic (API integrated)
+│       ├── ai-recommendations.html # AI/ML suggestions page
+│       ├── communication.html      # Communication panel (Coordinator)
+│       ├── dashboard-conductor.html# Conductor panel
+│       ├── dashboard-coordinator.html # Coordinator dashboard
+│       ├── index.html              # Project entry point (redirects to login)
+│       ├── login.html              # Login page
+│       └── tracking.html           # Live bus tracking page
+└── README.md                   # Main Project Overview and Setup Guide
 ```
 
 ---
@@ -129,7 +132,6 @@ project/
 
 ```bash
 git clone https://github.com/yourusername/routesaathi.git
-cd routesaathi/frontend
 ```
 
 **2. Add Images**
@@ -138,27 +140,20 @@ Place the required logo images in `assets/` as described in the documentation.
 
 **3. Run Locally**
 
-- **Option A: Using Live Server (Recommended)**
-  1. Install "Live Server" extension for VSCode
-  2. Right-click `index.html` → Open with Live Server
+- **Run FrontEnd**
+  1. `cd ./frontend/src`
+  2. `python -m http.server 5500`
 
-- **Option B: Using Python**
+- **Run Backend**
+  1. `cd ./backend`
+  2. `pip install -r requirements.txt`
+  3. `uvicorn main:app --reload`
 
-    ```bash
-    python -m http.server 8000
-    # Visit http://localhost:8000
-    ```
+    
 
-- **Option C: Using Node.js**
+- **On your broswer Open -**
 
-    ```bash
-    npx http-server
-    # Visit http://localhost:8080
-    ```
-
-- **Option D: Direct File Opening**
-
-  - Double-click `login.html` (some features may be limited)
+    `http://127.0.0.1:5500/frontend/src`
 
 ---
 

@@ -1,3 +1,7 @@
+// RouteSaathi_Prototype/frontend/src/js/coordinator.js (Final API Integrated Version)
+
+const API_BASE_URL = 'http://127.0.0.1:8000/api'; 
+
 // Check authentication
 if (localStorage.getItem('userRole') !== 'coordinator') {
     window.location.href = 'login.html';
@@ -11,49 +15,46 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// Mock data for dashboard
-const dashboardData = {
-    totalBuses: 24,
-    lowDemandRoutes: 5,
-    highDemandRoutes: 8,
-    pendingMessages: 3,
-    mlSuggestions: 6,
-    congestionAlerts: 4
-};
+// Fetch data from API and populate dashboard
+async function fetchAndPopulateDashboard() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        
+        const data = await response.json();
+        
+        // --- 1. DESTRUCTURE DATA from the API response ---
+        const { dashboard_stats, alerts, routes } = data;
 
-const alerts = [
-    { type: 'danger', message: 'Route 335E: Bus KA-01-F-4532 reporting heavy traffic', time: '15 mins ago' },
-    { type: 'warning', message: 'Route G4: Delay of 12 minutes due to congestion', time: '28 mins ago' },
-    { type: 'danger', message: 'Bus KA-01-F-8934 breakdown on Electronic City route', time: '45 mins ago' },
-    { type: 'info', message: 'ML System suggests reallocation for Route 500K', time: '1 hour ago' },
-    { type: 'success', message: 'Route 201: Running on schedule, 98% efficiency', time: '2 hours ago' }
-];
+        // Populate dashboard stats
+        document.getElementById('totalBuses').textContent = dashboard_stats.totalBuses;
+        document.getElementById('lowDemandRoutes').textContent = dashboard_stats.lowDemandRoutes;
+        document.getElementById('highDemandRoutes').textContent = dashboard_stats.highDemandRoutes;
+        document.getElementById('pendingMessages').textContent = dashboard_stats.pendingMessages;
+        document.getElementById('mlSuggestions').textContent = dashboard_stats.mlSuggestions;
+        document.getElementById('congestionAlerts').textContent = dashboard_stats.congestionAlerts;
+        
+        // --- 2. PASS DATA to helper functions ---
+        populateAlerts(alerts);
+        populateRouteTable(routes);
 
-const routes = [
-    { id: '335E', name: 'Kempegowda BS → Electronic City', activeBuses: 6, loadStatus: 'High', loadClass: 'badge-danger' },
-    { id: '500K', name: 'Kempegowda BS → Yeshwanthpur', activeBuses: 4, loadStatus: 'Medium', loadClass: 'badge-warning' },
-    { id: 'G4', name: 'Shivajinagar → Whitefield', activeBuses: 5, loadStatus: 'High', loadClass: 'badge-danger' },
-    { id: '201', name: 'Shanthinagar → Marathahalli', activeBuses: 3, loadStatus: 'Low', loadClass: 'badge-success' },
-    { id: '356', name: 'Banashankari → Koramangala', activeBuses: 4, loadStatus: 'Medium', loadClass: 'badge-warning' },
-    { id: '500D', name: 'Majestic → Hebbal', activeBuses: 2, loadStatus: 'Low', loadClass: 'badge-success' }
-];
-
-// Populate dashboard stats
-function populateStats() {
-    document.getElementById('totalBuses').textContent = dashboardData.totalBuses;
-    document.getElementById('lowDemandRoutes').textContent = dashboardData.lowDemandRoutes;
-    document.getElementById('highDemandRoutes').textContent = dashboardData.highDemandRoutes;
-    document.getElementById('pendingMessages').textContent = dashboardData.pendingMessages;
-    document.getElementById('mlSuggestions').textContent = dashboardData.mlSuggestions;
-    document.getElementById('congestionAlerts').textContent = dashboardData.congestionAlerts;
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        alert('Could not load real-time dashboard data. Check API server status.');
+    }
 }
 
-// Populate alerts
-function populateAlerts() {
+// Populate alerts (NOW ACCEPTS DATA AS ARGUMENT)
+function populateAlerts(alertsData) {
     const alertsList = document.getElementById('alertsList');
     alertsList.innerHTML = '';
     
-    alerts.forEach(alert => {
+    if (!alertsData || alertsData.length === 0) {
+        alertsList.innerHTML = '<p style="padding: 15px; color: #666;">No recent alerts.</p>';
+        return;
+    }
+
+    alertsData.forEach(alert => {
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert-item alert-${alert.type}`;
         alertDiv.innerHTML = `
@@ -64,12 +65,17 @@ function populateAlerts() {
     });
 }
 
-// Populate route table
-function populateRouteTable() {
+// Populate route table (NOW ACCEPTS DATA AS ARGUMENT)
+function populateRouteTable(routesData) {
     const tableBody = document.getElementById('routeTableBody');
     tableBody.innerHTML = '';
     
-    routes.forEach(route => {
+    if (!routesData || routesData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No route performance data available.</td></tr>';
+        return;
+    }
+
+    routesData.forEach(route => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${route.id}</strong></td>
@@ -86,9 +92,17 @@ function viewRouteDetails(routeId) {
     alert(`Viewing details for Route ${routeId}\n\nThis would open detailed analytics for the route.`);
 }
 
+// Add these two functions to the very end of your coordinator.js file:
+
+function viewAllAlerts() {
+    alert('[In Production] This will redirect to the dedicated alerts and notifications page.');
+}
+
+function generateReport() {
+    alert('[In Production] This will generating a Route Performance Summary Report...');
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
-    populateStats();
-    populateAlerts();
-    populateRouteTable();
+    fetchAndPopulateDashboard();
 });

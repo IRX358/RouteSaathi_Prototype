@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
 // Check authentication
 if (localStorage.getItem('userRole') !== 'coordinator') {
     window.location.href = 'login.html';
@@ -11,19 +13,25 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// Mock bus data
-const buses = [
-    { number: 'KA-01-F-4532', conductor: 'Ramesh Kumar', route: '335E', location: 'Silk Board Junction', status: 'ontime', statusText: 'On-Time', load: '85%', loadClass: 'badge-warning' },
-    { number: 'KA-01-F-8934', conductor: 'Suresh Babu', route: 'G4', location: 'Whitefield Main Road', status: 'delay', statusText: 'Delayed', load: '92%', loadClass: 'badge-danger' },
-    { number: 'KA-01-F-3421', conductor: 'Prakash M', route: '500K', location: 'Yeshwanthpur', status: 'ontime', statusText: 'On-Time', load: '68%', loadClass: 'badge-success' },
-    { number: 'KA-01-F-5678', conductor: 'Manjunath', route: '201', location: 'Marathahalli', status: 'congestion', statusText: 'Congestion', load: '78%', loadClass: 'badge-warning' },
-    { number: 'KA-01-F-7890', conductor: 'Venkatesh', route: '356', location: 'Koramangala', status: 'ontime', statusText: 'On-Time', load: '55%', loadClass: 'badge-success' },
-    { number: 'KA-01-F-2345', conductor: 'Rajesh Kumar', route: '500D', location: 'Hebbal Flyover', status: 'ontime', statusText: 'On-Time', load: '45%', loadClass: 'badge-success' },
-    { number: 'KA-01-F-6789', conductor: 'Ganesh Rao', route: '335E', location: 'BTM Layout', status: 'delay', statusText: 'Delayed', load: '95%', loadClass: 'badge-danger' },
-    { number: 'KA-01-F-1234', conductor: 'Srinivas', route: 'G4', location: 'KR Puram', status: 'congestion', statusText: 'Congestion', load: '88%', loadClass: 'badge-warning' }
-];
+let allBuses = []; // Store fetched buses globally
+let filteredBuses = []; // For local filtering
 
-let filteredBuses = [...buses];
+// Fetch buses from API
+async function fetchBuses() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/buses`);
+        if (!response.ok) throw new Error('Failed to fetch bus data');
+        
+        allBuses = await response.json();
+        filteredBuses = [...allBuses];
+        
+    } catch (error) {
+        console.error('Error fetching bus data:', error);
+        alert('Could not load live bus data.');
+        allBuses = []; // Ensure empty array on failure
+        filteredBuses = [];
+    }
+}
 
 // Populate bus cards
 function populateBusCards() {
@@ -76,7 +84,7 @@ function filterBuses() {
     const routeFilter = document.getElementById('routeFilter').value;
     const statusFilter = document.getElementById('statusFilter').value;
     
-    filteredBuses = buses.filter(bus => {
+    filteredBuses = allBuses.filter(bus => { 
         const routeMatch = routeFilter === 'all' || bus.route === routeFilter;
         const statusMatch = statusFilter === 'all' || bus.status === statusFilter;
         return routeMatch && statusMatch;
@@ -86,14 +94,20 @@ function filterBuses() {
     populateBusTable();
 }
 
-function refreshTracking() {
-    alert('Refreshing tracking data...\n\nIn production, this would fetch real-time GPS data from the server.');
-    populateBusCards();
-    populateBusTable();
+// function refreshTracking() {
+//     alert('Refreshing tracking data...\n\nIn production, this would fetch real-time GPS data from the server.');
+//     populateBusCards();
+//     populateBusTable();
+// }
+// I tired to make it async avdesh !!
+async function refreshTracking() { 
+    alert('Refreshing tracking data...');
+    await fetchBuses(); 
+    filterBuses(); 
 }
 
 function viewBusDetails(busNumber) {
-    const bus = buses.find(b => b.number === busNumber);
+    const bus = allBuses.find(b => b.number === busNumber);
     if (bus) {
         alert(`Bus Details: ${busNumber}\n\nConductor: ${bus.conductor}\nRoute: ${bus.route}\nCurrent Location: ${bus.location}\nStatus: ${bus.statusText}\nLoad: ${bus.load}`);
     }
@@ -108,8 +122,8 @@ function exportData() {
     alert('Exporting tracking data...\n\nThis would generate a CSV/Excel file with all bus tracking information.');
 }
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await fetchBuses(); // Initial load
     populateBusCards();
     populateBusTable();
 });

@@ -1,0 +1,18 @@
+{
+    "dashboard_stats": {
+        "totalBuses": 24, "lowDemandRoutes": 5, "highDemandRoutes": 8,
+        "pendingMessages": 3, "mlSuggestions": 6, "congestionAlerts": 4
+    },
+    "alerts": [
+        { "type": "danger", "message": "Route 335E: Bus KA-01-F-4532 reporting heavy traffic", "time": "15 mins ago" },
+        { "type": "warning", "message": "Route G4: Delay of 12 minutes due to congestion", "time": "28 mins ago" },
+        { "type": "warning", "message": "Route G9: Delay of 12 minutes due to congestion", "time": "28 mins ago" },
+        { "type": "warning", "message": "Route 285M: Bus Broke down near NES office", "time": "8 mins ago" }
+    ],
+    "routes": [
+        { "id": "335E", "name": "Kempegowda BS -> Electronic City", "activeBuses": 6, "loadStatus": "High", "loadClass": "badge-danger" },
+        { "id": "285M", "name": "Kempegowda BS -> Rajankunte", "activeBuses": 4, "loadStatus": "Medium", "loadClass": "badge-warning" },
+        { "id": "G9", "name": "Kempegowda BS -> Yelahanka New Town", "activeBuses": 4, "loadStatus": "Medium", "loadClass": "badge-warning" },
+        { "id": "96G", "name": "Kempegowda BS -> Rajajinagar", "activeBuses": 4, "loadStatus": "Medium", "loadClass": "badge-warning" }
+    ]
+}
