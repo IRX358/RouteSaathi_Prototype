@@ -1,0 +1,18 @@
+{
+    "conductors": [
+        { "id": 1, "name": "Ramesh Kumar", "busNumber": "KA-01-F-4532", "route": "V-335E", "online": true, "unread": 2 },
+        { "id": 2, "name": "Suresh Babu", "busNumber": "KA-01-F-8934", "route": "500D", "online": false, "unread": 0 },
+        { "id": 3, "name": "Prakash M", "busNumber": "KA-01-F-3421", "route": "G-10", "online": true, "unread": 1 },
+        { "id": 4, "name": "Anil S", "busNumber": "KA-01-F-5678", "route": "201", "online": true, "unread": 0 },
+        { "id": 5, "name": "Venkatesh", "busNumber": "KA-01-F-7890", "route": "365C", "online": true, "unread": 3 },
+        { "id": 6, "name": "Ganesh Rao", "busNumber": "KA-01-F-1234", "route": "401K", "online": true, "unread": 0 }
+    ],
+    "buses": [
+        { "number": "KA-01-F-4532", "conductor_id": 1, "conductor": "Ramesh Kumar", "route": "V-335E", "location": "Silk Board Junction", "status": "congestion", "statusText": "Congestion", "load": "98%", "loadClass": "badge-danger" },
+        { "number": "KA-01-F-8934", "conductor_id": 2, "conductor": "Suresh Babu", "route": "500D", "location": "Ecospace, ORR", "status": "breakdown", "statusText": "Breakdown", "load": "0%", "loadClass": "badge-danger" },
+        { "number": "KA-01-F-3421", "conductor_id": 3, "conductor": "Prakash M", "route": "G-10", "location": "Whitefield Main Rd", "status": "delay", "statusText": "Delayed", "load": "85%", "loadClass": "badge-warning" },
+        { "number": "KA-01-F-5678", "conductor_id": 4, "conductor": "Anil S", "route": "201", "location": "Jayanagar 4th Block", "status": "ontime", "statusText": "On-Time", "load": "55%", "loadClass": "badge-success" },
+        { "number": "KA-01-F-7890", "conductor_id": 5, "conductor": "Venkatesh", "route": "365C", "location": "IIM-B Road", "status": "ontime", "statusText": "On-Time", "load": "72%", "loadClass": "badge-success" },
+        { "number": "KA-01-F-1234", "conductor_id": 6, "conductor": "Ganesh Rao", "route": "401K", "location": "Peenya Industrial Area", "status": "delay", "statusText": "Delayed", "load": "60%", "loadClass": "badge-warning" }
+    ]
+}
