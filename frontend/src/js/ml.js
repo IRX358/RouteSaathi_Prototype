@@ -13,7 +13,7 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-let recommendations = [];
+// let recommendations = [];
 
 // Fetch recommendations from API
 async function fetchRecommendations() {
@@ -74,14 +74,6 @@ async function applyRecommendation(index) {
     }
 }
 
-// function applyAllRecommendations() {
-//     const highPriority = recommendations.filter(r => r.priority === 'HIGH').length;
-//     const totalChanges = recommendations.filter(r => r.change !== '0').length;
-    
-//     if (confirm(`Apply all ML recommendations?\n\nTotal changes: ${totalChanges}\nHigh priority: ${highPriority}\n\nThis will optimize the entire fleet allocation.`)) {
-//         alert(`All recommendations applied successfully!\n\n${totalChanges} routes updated.\nFleet optimization complete.`);
-//     }
-// }
 
 async function applyAllRecommendations() { 
     const totalChanges = recommendations.filter(r => r.change !== '0').length;
