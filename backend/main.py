@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException, Body, Query
+from fastapi import FastAPI, HTTPException, Body, Query, Depends, status, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import time
@@ -48,27 +50,31 @@ class PredictiveEngine:
             
     def predict_route_action(self, route_data: Dict[str, Any]) -> str:
         """
-        Takes mock input features and returns a predicted classification.
-        For prototyping, we mock the real-time data input.
+        Generates deterministic input features using embedded 'base_trips' and
+        'base_stops' from stats.json to force the model into the desired 0/1/2 state.
+        This provides predictable output for demonstration.
         """
-        if not self.model:
-            return np.random.choice([0, 1, 2]) # Fallback mock
+        if self.model is None:
+            # Fallback mock used if model failed to load
+            return np.random.choice([0, 1, 2]) 
 
-        # --- MOCK DATA SIMULATION ---
-        # NOTE: In a real system, 'route_data' would contain historical data needed
-        # to calculate these 5 specific features. Here we generate a realistic mock.
-        
-        # 1. Simulate Input Features based on current time
+        # --- DYNAMIC TIME-SHIFT FEATURES (Required by ML model) ---
+        # Since the model needs these, we include them based on current time.
         now = time.localtime()
         is_morning = 1 if 6 <= now.tm_hour < 12 else 0
         is_afternoon = 1 if 12 <= now.tm_hour < 17 else 0
         is_other = 1 - (is_morning + is_afternoon)
         
-        # 2. Simulate trip/event data (made random but influenced by route complexity)
-        n_trips = route_data.get('activeBuses', 5) * np.random.randint(2, 4)
-        n_stop_events = n_trips * np.random.randint(15, 30)
-
+        # --- DETERMINISTIC INPUTS FROM stats.json ---
+        route_id = route_data.get('id', 'N/A')
+        
+        # Use the extreme inputs from the JSON file to hit the model's boundaries
+        n_trips = route_data.get('base_trips', 10) 
+        n_stop_events = route_data.get('base_stops', 200) 
+        
         # 3. Create DataFrame for prediction (MUST match feature_columns.joblib)
+        # Using a fixed shift (e.g., afternoon) ensures consistency if the current time is off-peak
+        # For full coverage, we will use the current time, but the extreme inputs should dominate the prediction.
         input_data = pd.DataFrame([{
             'n_trips': n_trips,
             'n_stop_events': n_stop_events,
@@ -76,20 +82,30 @@ class PredictiveEngine:
             'shift_morning': is_morning,
             'shift_other': is_other
         }])
-
+        
         # 4. Prediction
         prediction = self.model.predict(input_data)[0]
-        print(f"ML PREDICTION: Route {route_data.get('id', 'N/A')} predicted class: {prediction}")
+        
+        print(f"ML PREDICTION: Route {route_id}. Inputs: (Trips={n_trips}, Stops={n_stop_events}). Predicted Class: {prediction}")
+        
         return prediction
 
 # Initialize ML Engine
 ML_ENGINE = PredictiveEngine()
 
+
 app = FastAPI(
     title="RouteSaathi API",
-    description="FastAPI Backend for BMTC Route Management System with ML",
+    description="FastAPI Backend & Web Server for BMTC Route Management System with ML",
     version="1.0.0"
 )
+
+# --- MOUNT STATIC FILES (Frontend Service) ---
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src')
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+else:
+    print(f"Warning: Frontend directory not found at {FRONTEND_DIR}. Only API endpoints will work.")
 
 app.add_middleware(
     CORSMiddleware,
@@ -99,7 +115,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global data variables initialized from files (ml.json is now ignored/removed)
+# Global data variables initialized from files
 USERS = load_json_file("user.json")
 STATS_DATA = load_json_file("stats.json")
 FLEET_DATA = load_json_file("fleet.json")
@@ -113,8 +129,6 @@ CURRENT_MESSAGES = [
 ]
 
 # --- 2. PYDANTIC MODELS (DATA SCHEMA) ---
-# NOTE: The Recommendation model below is updated to match the output of our new dynamic generator.
-# We will generate a priorityClass dynamically.
 
 class UserLogin(BaseModel):
     username: str
@@ -170,10 +184,11 @@ def generate_ml_recommendations() -> List[Recommendation]:
     recommendations = []
     
     # Map raw model output (0, 1, 2) to Recommendation data structure
+    # NOTE: These mappings are designed to reflect the predicted class meaning
     ML_MAP = {
-        0: {"priority": "LOW", "priorityClass": "badge-info", "change": "-1", "changeClass": "badge-danger", "reason": "Low predicted demand, reduce frequency.", "impact": "Save fuel costs."},
-        1: {"priority": "MEDIUM", "priorityClass": "badge-warning", "change": "0", "changeClass": "badge-info", "reason": "Optimal allocation, maintaining schedule.", "impact": "Maintain 90%+ efficiency."},
-        2: {"priority": "HIGH", "priorityClass": "badge-danger", "change": "+2", "changeClass": "badge-success", "reason": "High predicted demand, overcrowding risk.", "impact": "Reduce wait time by 10 mins."}
+        0: {"priority": "LOW", "priorityClass": "badge-info", "change": "-1", "changeClass": "badge-danger", "reason": "Low predicted demand, capacity surplus detected.", "impact": "Save fuel and resource costs."},
+        1: {"priority": "MEDIUM", "priorityClass": "badge-warning", "change": "0", "changeClass": "badge-info", "reason": "Optimal allocation, maintaining current schedule.", "impact": "Maintain 90%+ efficiency."},
+        2: {"priority": "HIGH", "priorityClass": "badge-danger", "change": "+2", "changeClass": "badge-success", "reason": "Critical risk: High predicted demand, imminent overcrowding.", "impact": "Reduce wait time by 10 mins; mitigate crowding."}
     }
 
     # Iterate over active routes from STATS_DATA
@@ -183,22 +198,26 @@ def generate_ml_recommendations() -> List[Recommendation]:
         route_id = route_info['id']
         active_buses = route_info['activeBuses']
         
-        # Get ML prediction (0, 1, or 2)
+        # Get ML prediction (0, 1, or 2) using deterministic inputs
         prediction_key = ML_ENGINE.predict_route_action(route_info) 
         
-        ml_result = ML_MAP.get(prediction_key, ML_MAP[1]) # Default to MEDIUM/0 if key missing
+        # Ensure prediction_key is a valid integer key for ML_MAP
+        try:
+            prediction_key = int(prediction_key)
+        except ValueError:
+            prediction_key = 1 # Default to medium if non-integer prediction received
+            
+        ml_result = ML_MAP.get(prediction_key, ML_MAP[1]) 
         
         # Calculate recommended buses based on prediction
-        recommended_buses = active_buses + int(ml_result['change'])
+        change_int = int(ml_result['change'])
+        recommended_buses = active_buses + change_int
         
-        # Ensure recommended buses is not negative
-        recommended_buses = max(1, recommended_buses) 
+        # Apply sanity check: minimum 1 bus
+        if recommended_buses < 1:
+             recommended_buses = 1
+             ml_result['change'] = "-1" # Reflect the minimum change
         
-        # Handle the case where change is 0 but prediction is high (shouldn't happen with this map)
-        if prediction_key == 2 and active_buses == recommended_buses:
-             recommended_buses += 1 # Ensure high prediction results in change
-             ml_result['change'] = f"+{recommended_buses - active_buses}"
-             
         # Build the final Recommendation object
         recommendations.append(Recommendation(
             priority=ml_result['priority'],
@@ -217,8 +236,13 @@ def generate_ml_recommendations() -> List[Recommendation]:
 
 # --- 4. API ENDPOINTS (Updated for ML) ---
 
+@app.get("/")
+async def redirect_to_index():
+    """Redirects the root URL to index.html, the starting point of the frontend."""
+    return RedirectResponse(url="/static/index.html")
+
+
 @app.post(f"{API_PREFIX}/auth/login", response_model=LoginResponse, summary="User Authentication")
-# ... (login function remains the same) ...
 async def login(user: UserLogin):
     db_user = next((u for u in USERS if u["username"] == user.username), None)
 
@@ -232,7 +256,6 @@ async def login(user: UserLogin):
     )
 
 @app.get(f"{API_PREFIX}/dashboard/stats", summary="Coordinator Dashboard Summary Statistics")
-# ... (get_dashboard_stats function remains the same) ...
 async def get_dashboard_stats():
     pending_messages_count = sum(1 for msg in CURRENT_MESSAGES if msg.get("read") == False and msg.get("to") == "coordinator")
     
@@ -246,7 +269,6 @@ async def get_dashboard_stats():
     }
 
 @app.get(f"{API_PREFIX}/buses", response_model=List[Bus], summary="Live Bus Tracking Data")
-# ... (get_buses function remains the same) ...
 async def get_buses(route: Optional[str] = Query(None), status: Optional[str] = Query(None)):
     """Returns a list of all active buses, filterable by route and status."""
     filtered = CURRENT_BUSES
@@ -265,12 +287,12 @@ async def get_recommendations():
     return generate_ml_recommendations()
 
 @app.post(f"{API_PREFIX}/ai/apply/{{route_id}}", summary="Apply a single ML recommendation")
-# ... (apply_recommendation function logic remains the same, but references the dynamic list) ...
 async def apply_recommendation(route_id: str):
     
     # Generate the latest dynamic list to find the match
     latest_recommendations = generate_ml_recommendations()
     
+    # Find the recommendation by checking if the route ID is in the route string
     rec = next((r for r in latest_recommendations if r.route.endswith(f"({route_id})")), None)
     
     if not rec:
@@ -280,19 +302,16 @@ async def apply_recommendation(route_id: str):
     return {"status": "success", "message": f"Recommendation for Route {route_id} applied: {rec.change} buses reallocated."}
 
 @app.get(f"{API_PREFIX}/communication/conductors", response_model=List[Conductor], summary="List of Active Conductors for Chat")
-# ... (get_conductors function remains the same) ...
 async def get_conductors():
     return CURRENT_CONDUCTORS
 
 @app.get(f"{API_PREFIX}/communication/messages", summary="Get recent messages (Coordinator View)")
-# ... (get_recent_messages function remains the same) ...
 async def get_recent_messages():
     # Return last 5 messages sent or received by coordinator
     return sorted(CURRENT_MESSAGES, key=lambda x: x['timestamp'], reverse=True)[:5]
 
 
 @app.post(f"{API_PREFIX}/messages", status_code=201, summary="Send a 1:1 Message or Report Issue")
-# ... (send_message function remains the same) ...
 async def send_message(message: Message):
     message_dict = message.model_dump(by_alias=True)
     message_dict["id"] = uuid.uuid4().hex
@@ -303,6 +322,5 @@ async def send_message(message: Message):
     return {"status": "Message Sent", "id": message_dict["id"]}
 
 @app.post(f"{API_PREFIX}/broadcast", status_code=201, summary="Send a Broadcast Message")
-# ... (send_broadcast function remains the same) ...
 async def send_broadcast(broadcast_message: str = Body(..., embed=True, alias="message")):
     return {"status": "Broadcast successful", "message": "Message queued for delivery to all active conductors."}

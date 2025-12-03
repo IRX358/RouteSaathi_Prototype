@@ -10,17 +10,68 @@
     "alerts": [
         { "type": "danger", "message": "Route V-335E: Bus KA-01-F-4532 reporting total traffic standstill at Silk Board junction.", "time": "2 mins ago" },
         { "type": "warning", "message": "Route 500D: Delay of 15 minutes expected due to Hebbal flyover maintenance.", "time": "10 mins ago" },
-        { "type": "danger", "message": "Bus KA-01-F-8934 breakdown on ORR near Ecospace. Blocking one lane.", "time": "25 mins ago" },
-        { "type": "info", "message": "ML System suggests re-timing Route 201 during non-peak hours.", "time": "1 hour ago" },
-        { "type": "warning", "message": "Route G-10: Heavy passenger overcrowding near ITPL entrance.", "time": "45 mins ago" },
-        { "type": "success", "message": "Route 365C: Running 98% on schedule. High efficiency.", "time": "3 hours ago" }
+        { "type": "danger", "message": "Bus KA-01-F-8934 breakdown on ORR near Ecospace. Blocking one lane.", "time": "25 mins ago" }
     ],
     "routes": [
-        { "id": "V-335E", "name": "Majestic -> Electronic City (Vajra AC)", "activeBuses": 8, "loadStatus": "Critical", "loadClass": "badge-danger" },
-        { "id": "500D", "name": "KBS -> KR Puram (ORR)", "activeBuses": 5, "loadStatus": "High", "loadClass": "badge-danger" },
-        { "id": "G-10", "name": "Marathahalli -> Whitefield (G series)", "activeBuses": 7, "loadStatus": "High", "loadClass": "badge-warning" },
-        { "id": "201", "name": "Shivajinagar -> Jayanagar 4th Blk", "activeBuses": 4, "loadStatus": "Low", "loadClass": "badge-success" },
-        { "id": "365C", "name": "Banashankari -> Bannerghatta Rd", "activeBuses": 5, "loadStatus": "Medium", "loadClass": "badge-warning" },
-        { "id": "401K", "name": "Yelahanka -> Kengeri Satellite", "activeBuses": 6, "loadStatus": "Medium", "loadClass": "badge-warning" }
+        { 
+            "id": "V-335E", 
+            "name": "Majestic → Electronic City (Vajra AC)", 
+            "activeBuses": 8, 
+            "loadStatus": "Critical", 
+            "loadClass": "badge-danger",
+            "ml_profile": "HIGH_DEMAND",
+            "base_trips": 300,        
+            "base_stops": 7500
+        },
+        { 
+            "id": "G-10", 
+            "name": "Marathahalli → Whitefield (G series)", 
+            "activeBuses": 7, 
+            "loadStatus": "High", 
+            "loadClass": "badge-warning",
+            "ml_profile": "MEDIUM_DEMAND",
+            "base_trips": 15,        
+            "base_stops": 350
+        },
+        { 
+            "id": "201", 
+            "name": "Shivajinagar → Jayanagar 4th Blk", 
+            "activeBuses": 4, 
+            "loadStatus": "Low", 
+            "loadClass": "badge-success",
+            "ml_profile": "LOW_DEMAND",
+            "base_trips": 2,        
+            "base_stops": 10
+        },
+        { 
+            "id": "500D", 
+            "name": "KBS → KR Puram (ORR)", 
+            "activeBuses": 5, 
+            "loadStatus": "High", 
+            "loadClass": "badge-danger",
+            "ml_profile": "HIGH_DEMAND",
+            "base_trips": 350,         
+            "base_stops": 8000
+        },
+        { 
+            "id": "365C", 
+            "name": "Banashankari → Bannerghatta Rd", 
+            "activeBuses": 5, 
+            "loadStatus": "Medium", 
+            "loadClass": "badge-warning",
+            "ml_profile": "LOW_DEMAND",
+            "base_trips": 1,         
+            "base_stops": 5
+        },
+        { 
+            "id": "401K", 
+            "name": "Yelahanka → Kengeri Satellite", 
+            "activeBuses": 6, 
+            "loadStatus": "Medium", 
+            "loadClass": "badge-warning",
+            "ml_profile": "MEDIUM_DEMAND",
+            "base_trips": 17,        
+            "base_stops": 380
+        }
     ]
 }
